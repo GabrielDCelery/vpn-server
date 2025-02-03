@@ -1,0 +1,9 @@
+# vpn represents a group of machines
+vpn:
+  vars:
+    ansible_user: ubuntu
+  # just have one host for managing my vpn atm
+  hosts:
+    vpn_server_host:
+      ansible_host: "{{ vpn_host_ip }}"
+      ansible_ssh_private_key_file: "{{ vpn_host_private_key_path }}"

@@ -1,0 +1,4 @@
+ansible/host_vars
+terraform/.terraform
+terraform/terraform.tfstate*
+terraform/terraform.tfvars

@@ -22,9 +22,14 @@ tasks:
       - docker context rm vpn-host -f
       - docker context create vpn-host --docker "host=ssh://ubuntu@{{ .VPN_HOST_IP }}"
       - DOCKER_CONTEXT=vpn-host && docker run hello-world
-  deploy:
+  create:
     cmds:
       - task: install
       - task: terraform
       - task: ansible
       - task: docker
+
+  destroy:
+    dir: ./terraform
+    cmds:
+      - terraform destroy

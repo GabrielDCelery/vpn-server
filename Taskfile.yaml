@@ -21,7 +21,7 @@ tasks:
     cmds:
       - docker context rm vpn-host -f
       - docker context create vpn-host --docker "host=ssh://ubuntu@{{ .VPN_HOST_IP }}"
-      - DOCKER_CONTEXT=vpn-host && docker run hello-world
+      - DOCKER_CONTEXT=vpn-host && docker compose --file ./docker/docker-compose.yaml up -d
   create:
     cmds:
       - task: install

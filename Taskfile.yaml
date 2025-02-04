@@ -1,0 +1,30 @@
+version: '3'
+
+tasks:
+  install:
+    cmds:
+      - terraform -chdir=./terraform init
+  terraform:
+    dir: ./terraform
+    cmds:
+      - terraform apply
+  ansible:
+    vars:
+      VPN_HOST_IP:
+        sh: terraform -chdir=./terraform output -json | jq '.vpn_host_ip.value'
+    cmds:
+      - ansible-playbook -i ./ansible/inventory.yaml ./ansible/playbook.yaml --extra-vars "vpn_host_ip={{ .VPN_HOST_IP }}"
+  docker:
+    vars:
+      VPN_HOST_IP:
+        sh: terraform -chdir=./terraform output -json | jq '.vpn_host_ip.value'
+    cmds:
+      - docker context rm vpn-host -f
+      - docker context create vpn-host --docker "host=ssh://ubuntu@{{ .VPN_HOST_IP }}"
+      - DOCKER_CONTEXT=vpn-host && docker run hello-world
+  deploy:
+    cmds:
+      - task: install
+      - task: terraform
+      - task: ansible
+      - task: docker

@@ -37,6 +37,7 @@ resource "aws_security_group" "allow_inbound_ssh" {
   }
 }
 
+
 resource "aws_vpc_security_group_ingress_rule" "allow_ssh_ipv4" {
   for_each = toset(var.ssh_allow_list)
 
@@ -63,10 +64,44 @@ resource "aws_vpc_security_group_egress_rule" "allow_outbound_all" {
   ip_protocol       = "-1" # semantically equivalent to all ports
 }
 
+resource "aws_security_group" "allow_ipsec" {
+  name        = "allow_inbound_ipsec"
+  description = "Allows inbound IPSec"
+  vpc_id      = data.aws_vpc.default_vpc.id
+
+  tags = {
+    Name = "allow_inbound_ipsec"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "allow_inbound_udp_500" {
+  security_group_id = aws_security_group.allow_ipsec.id
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 500
+  ip_protocol       = "udp"
+  to_port           = 500
+}
+
+resource "aws_vpc_security_group_ingress_rule" "allow_inbound_udp_4500" {
+  security_group_id = aws_security_group.allow_ipsec.id
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 4500
+  ip_protocol       = "udp"
+  to_port           = 4500
+}
+
+resource "aws_vpc_security_group_ingress_rule" "allow_inbound_udp_1701" {
+  security_group_id = aws_security_group.allow_ipsec.id
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 1701
+  ip_protocol       = "udp"
+  to_port           = 1701
+}
+
 resource "aws_instance" "vpn_host" {
   ami             = "ami-091f18e98bc129c4e"
   instance_type   = "t2.micro"
-  security_groups = [aws_security_group.allow_inbound_ssh.name, aws_security_group.allow_outbound_all.name]
+  security_groups = [aws_security_group.allow_inbound_ssh.name, aws_security_group.allow_ipsec.name, aws_security_group.allow_outbound_all.name]
   key_name        = aws_key_pair.deployer.id
 }
 

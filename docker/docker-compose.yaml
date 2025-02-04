@@ -1,5 +1,18 @@
-version: '3'
-
 services:
-  hello_world:
-    image: hello-world
+  vpn:
+    image: hwdsl2/ipsec-vpn-server
+    container_name: ipsec-vpn-server
+    ports:
+      - "500:500/udp"
+      - "4500:4500/udp"
+      - "1701:1701/udp"
+    volumes:
+      - ikev2-vpn-data:/etc/ipsec.d
+      - /lib/modules:/lib/modules:ro
+    restart: always
+    privileged: true
+    
+volumes:
+  ikev2-vpn-data:
+    driver: local
+  

@@ -21,8 +21,8 @@ tasks:
     cmds:
       - docker context rm vpn-host -f
       - docker context create vpn-host --docker "host=ssh://ubuntu@{{ .VPN_HOST_IP }}"
-      - DOCKER_CONTEXT=vpn-host && docker volume create ikev2-vpn-data 
-      - DOCKER_CONTEXT=vpn-host && docker compose --file ./docker/docker-compose.yaml up -d
+      - export DOCKER_CONTEXT=vpn-host && docker volume create ikev2-vpn-data 
+      - export DOCKER_CONTEXT=vpn-host && docker compose --file ./docker/docker-compose.yaml up -d
   create:
     cmds:
       - task: install

@@ -105,9 +105,13 @@ resource "aws_instance" "vpn_host" {
   key_name        = aws_key_pair.deployer.id
 }
 
+resource "aws_eip" "vpn_host_eip" {
+  instance = aws_instance.vpn_host.id
+}
+
 output "vpn_host_ip" {
   description = "Public IP of the VPN Host"
-  value       = aws_instance.vpn_host.public_ip
+  value       = aws_eip.vpn_host_eip.public_ip
 }
 
 resource "null_resource" "example" {
